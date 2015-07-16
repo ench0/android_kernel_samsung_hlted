@@ -6,7 +6,6 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
-
 #ifndef __LINUX_CPUFREQ_LIMIT_H__
 #define __LINUX_CPUFREQ_LIMIT_H__
 
@@ -20,7 +19,8 @@ struct cpufreq_limit_handle;
 //#define MAX_FREQ_LIMIT	2265600
 //#endif
 //#define MIN_FREQ_LIMIT	300000
-#define MAX_FREQ_LIMIT	2803200
+//#define MAX_FREQ_LIMIT	2803200
+#define MAX_FREQ_LIMIT	2496000
 #define MIN_FREQ_LIMIT	300000
 
 struct cpufreq_limit_handle *cpufreq_limit_get(unsigned long min_freq,
