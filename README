@@ -1,3 +1,8 @@
+This kernel is based on Dirty Unicorns' kernel for hlte. All props to DU team for being good sports.
+
+
+standard linux stuff bellow
+***********************
 	Linux kernel release 3.x <http://kernel.org/>
 
 These are the release notes for Linux version 3.  Read them carefully,
