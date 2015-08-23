@@ -285,6 +285,7 @@ config ARCH_MSM8974
 	select MSM_ULTRASOUND_B
 	select MSM_RPM_LOG
 	select ARCH_WANT_KMAP_ATOMIC_FLUSH
+        select HAS_MACH_MEMUTILS
 	select KRAIT_REGULATOR
 	select ENABLE_VMALLOC_SAVINGS
 	select MSM_AVTIMER
@@ -292,6 +293,7 @@ config ARCH_MSM8974
 config ARCH_MSM8974PRO
 	bool "MSM8974PRO"
 	depends on ARCH_MSM8974
+	
 
 config ARCH_APQ8084
 	bool "APQ8084"
@@ -1664,6 +1666,12 @@ config MACH_HLTELGT
 	help
 	  Support for Samsung HLTELGT device.
 
+config  ARCH_MSM_KRAIT
+	bool
+	select ARM_L1_CACHE_SHIFT_6
+	select DEVFREQ_GOV_MSM_BW_HWMON
+	select DEVFREQ_GOV_MSM_CACHE_HWMON
+
 config MACH_FLTESKT
 	default n
 	bool "Samsung model FLTESKT"
@@ -2438,7 +2446,7 @@ config MSM_RPC_PROC_COMM_TEST
 
 config MSM_RPC_OEM_RAPI
 	depends on MSM_ONCRPCROUTER
-	default m
+	default n
 	bool "MSM oem rapi"
 	help
 	  Implements MSM oem rapi client module.
@@ -2476,7 +2484,7 @@ config MSM_DALRPC
 config MSM_DALRPC_TEST
 	tristate "DAL RPC test module"
 	depends on (MSM_DALRPC && DEBUG_FS)
-	default m
+	default n
 	help
 	  Exercises DAL RPC calls to QDSP6.
 
@@ -2500,6 +2508,39 @@ config MSM_CPU_FREQ_MIN
 	default 245760
 
 endif # CPU_FREQ_MSM
+
+config ZEN_DECISION
+	bool "Zen Decision: MSM Userspace Handler"
+	depends on SMP && FB
+	default n
+	help
+	  MSM/Qcomm devices have multiple userspace applications that handle
+	  CPU hotplugging and frequency operations.
+
+	  ZenDecision is a "handler" to account for behavior caused by
+	  disabling some of these services.
+
+	  For example, If MPDecision is disabled and MSM-Thermal_Engine is 
+	  enabled in the userspace. Situations where CPUs go offline but never
+	  come back online occur. ZenDecision handles the situation of CPUs
+	  never coming online when they are supposed.
+  
+	  ZenDecision ensures all CPUs are online when they are supposed to be by:
+	  - Enable all CPUs when screen comes on after wake_wait_delay
+	  - Ignore all CPU_UP operations when battery level is <= 15% to respect
+	    decisions of MSMThermal.
+
+	  Userspace tunables for ZenDecision (/sys/kernel/zen_decision):
+	  - enabled (0 or 1): Enable or disable the driver.
+	  - wake_wait_time (0-60000): How long to wait before executing CPU_UP work.
+	  - bat_threshold_ignore (0-100, 0=disabled): Don't do any CPU_UP work up to
+	     this battery charge level.
+
+	  WARNING: ZenDecision is not a direct replacement for any of the MSM userspace
+	  services. It is simply designed to "handle" specific behaviors that are caused
+	  by disabling these services.
+
+	  If unsure, say N.
 
 config MSM_DEVFREQ_CPUBW
 	bool "Devfreq device for CPU<->DDR IB/AB BW voting"
@@ -2631,7 +2672,7 @@ config MSM_VREG_SWITCH_INVERTED
 
 config MSM_DMA_TEST
 	tristate "MSM DMA test module"
-	default m
+	default n
 	help
 	  Intended to be compiled as a module.  Provides a device node
 	  and ioctls for testing the MSM dma system.
